@@ -24,6 +24,7 @@ const normalise = input => {
  * @param {(sass: any, options: any) => internal.Transform} compiler
  * @param {string} testDirectory
  * @param {sass.Options<"sync" | "async">} options
+ * @returns {Promise<Vinyl>}
  */
 const compileTestDirectory = (compiler, testDirectory, options = {}) => {
 	const filePath = path.join(testDirectory, 'input.scss');
@@ -44,7 +45,7 @@ const compileTestDirectory = (compiler, testDirectory, options = {}) => {
 			reject(error);
 		});
 
-		// eslint-disable-next-line no-undefined
+
 		stream.write(file);
 		stream.end(() => {
 			resolve(file);
@@ -140,7 +141,7 @@ describe.each([
 					reject(error);
 				});
 
-				// eslint-disable-next-line no-undefined
+
 				stream.write(file);
 				stream.end(() => {
 					resolve(file);

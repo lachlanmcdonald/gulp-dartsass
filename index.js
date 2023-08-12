@@ -6,6 +6,25 @@ const { pathToFileURL } = require('url');
 
 const PLUGIN_NAME = 'gulp-dartsass';
 
+/**
+ * @typedef CompileResult
+ * @property {string} css
+ * @property {URL[]} loadedUrls
+ * @property {unknown} [sourceMap]
+ */
+
+/**
+ * @typedef SassCompiler
+ * @property {(source: string, options?: Record<string, any>) => Promise<CompileResult>} compileStringAsync
+ * @property {(source: string, options?: Record<string, any>) => CompileResult} compileString
+ */
+
+/**
+ * @param {boolean} async
+ * @param {SassCompiler} sass
+ * @param {Record<string, any>} options
+ * @returns
+ */
 const gulpDartSass = (async, sass, options) => {
 	const handleResult = (file, result, callback) => {
 		file.contents = Buffer.from(result.css, 'utf-8');
@@ -85,9 +104,19 @@ const gulpDartSass = (async, sass, options) => {
 };
 
 module.exports = {
+	/**
+	 * @param {SassCompiler} sass
+	 * @param {Record<string, any>} [options]
+	 * @returns
+	 */
 	sync(sass, options) {
 		return gulpDartSass(false, sass, options);
 	},
+	/**
+	 * @param {SassCompiler} sass
+	 * @param {Record<string, any>} [options]
+	 * @returns
+	 */
 	async(sass, options) {
 		return gulpDartSass(true, sass, options);
 	},

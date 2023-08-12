@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint --report-unused-disable-directives --fix ."
   },
   "engines": {
     "node": ">=16"
