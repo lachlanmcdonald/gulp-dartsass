@@ -33,6 +33,7 @@ const compileTestDirectory = (compiler, testDirectory, options = {}) => {
 		base: testDirectory,
 		path: filePath,
 		contents: fs.readFileSync(filePath),
+		stat: fs.statSync(filePath),
 	});
 
 	return new Promise((resolve, reject) => {
@@ -146,6 +147,18 @@ describe.each([
 				});
 			});
 		}).rejects.toThrow(/^expected/iu);
+	});
+
+	test('File\'s atimeMs, mtimeMs, and ctimeMs stats are updated', async () => {
+		const testDirectory = path.join(TEST_DIR, 'imports');
+		const testFile = path.join(testDirectory, 'input.scss');
+		const stats = fs.statSync(testFile);
+
+		const file = await compileTestDirectory(sync, testDirectory);
+
+		expect(file.stat.atimeMs).toBeGreaterThan(stats.atimeMs);
+		expect(file.stat.mtimeMs).toBeGreaterThan(stats.mtimeMs);
+		expect(file.stat.ctimeMs).toBeGreaterThan(stats.ctimeMs);
 	});
 });
 

@@ -13,11 +13,11 @@ const gulpDartSass = (async, sass, options) => {
 
 		// Update file times
 		if (file.stat) {
-			const now = new Date();
+			const now = Math.floor(new Date().getTime());
 
-			file.stat.atime = now;
-			file.stat.mtime = now;
-			file.stat.ctime = now;
+			file.stat.atimeMs = now;
+			file.stat.mtimeMs = now;
+			file.stat.ctimeMs = now;
 		}
 
 		return callback(null, file);
