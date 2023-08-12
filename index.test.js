@@ -86,7 +86,9 @@ const OPTS_ASYNC_IMPORTS = {
 			 */
 			canonicalize(url) {
 				return new Promise(resolve => {
+					setTimeout(() => {
 					resolve(url.startsWith('color:') ? new URL(url) : null);
+					}, 500);
 				});
 			},
 			/**
@@ -95,10 +97,12 @@ const OPTS_ASYNC_IMPORTS = {
 			 */
 			load(url) {
 				return new Promise(resolve => {
+					setTimeout(() => {
 					resolve({
 						contents: `body { color: ${url.pathname}; }`,
 						syntax: 'scss',
 					});
+					}, 500);
 				});
 			},
 		},
