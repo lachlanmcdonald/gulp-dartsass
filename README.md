@@ -10,7 +10,7 @@ To use **gulp-dartsass**, you must install both **gulp-dartsass** itself and the
 npm install --save-dev @lmcd/gulp-dartsass sass
 ```
 
-## Usage
+## Usage
 
 **gulp-dartsass** supports both _sync_ and _async_ compilation. You should only use async compilation when utilising async custom importers. Otherwise, sync compilation is preferred for speed.
 
