@@ -187,3 +187,11 @@ describe(`Sync compilation`, () => {
 		}).rejects.toThrow(/canonicalize.*synchronous compile functions/iu);
 	});
 });
+
+describe('normalise()', () => {
+	test('Trims', () => {
+		const a = ' test\r\nline\r\n ';
+
+		expect(normalise(a)).toBe('test\nline');
+	});
+});
