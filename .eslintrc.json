@@ -2,7 +2,7 @@
 	"root": true,
 	"extends": [
 		"eslint:recommended",
-		"@lachlanmcdonald/eslint-config-eslint"
+		"@lmcd/eslint-config"
 	],
 	"plugins": [
 		"jest"
