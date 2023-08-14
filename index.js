@@ -3,6 +3,7 @@ const through2 = require('through2');
 const replaceExtension = require('replace-ext');
 const path = require('path');
 const { pathToFileURL } = require('url');
+const applySourceMap = require('vinyl-sourcemaps-apply');
 
 const PLUGIN_NAME = 'gulp-dartsass';
 
@@ -29,6 +30,14 @@ const gulpDartSass = (async, sass, options) => {
 	const handleResult = (file, result, callback) => {
 		file.contents = Buffer.from(result.css, 'utf-8');
 		file.path = replaceExtension(file.path, '.css');
+
+		// Handle sourcemap
+		if (file.sourceMap) {
+			applySourceMap(file, {
+				...result.sourceMap,
+				file: 'input.css',
+			});
+		}
 
 		// Update file times
 		if (file.stat) {

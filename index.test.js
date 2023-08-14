@@ -2,6 +2,9 @@ const Vinyl = require('vinyl');
 const fs = require('fs');
 const path = require('path');
 const sass = require('sass');
+const gulp = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const tap = require('gulp-tap');
 const { async, sync } = require('.');
 
 const TEST_DIR = path.join(__dirname, 'tests');
@@ -14,6 +17,42 @@ const TEST_DIR = path.join(__dirname, 'tests');
  */
 const normalise = input => {
 	return input.toString().replace(/[\r\n]+/gu, '\n').trim();
+};
+
+/**
+ * Hastily decode the JSON of an embedded source-map within a buffer. Handles URI and Base64 encoding,
+ * but otherwise this function is only intended for these tests and not a universal solution.
+ *
+ * @param {Buffer} buffer
+ */
+const extractSourceMap = buffer => {
+	const sourceMapPattern = /(?<=sourceMappingURL=)(?<url>.*)(?=\s*\*\/)/i;
+	const contents = buffer.toString('utf-8');
+	const match = contents.match(sourceMapPattern);
+
+	if (match) {
+		const urlPattern = /(?:data:)([^;,]+)(;[^;,]+)*?(?<isBase64>;base64)?(?:,)(?<contents>.*)/;
+		const urlMatch = match.groups.url.match(urlPattern);
+
+		if (urlMatch) {
+			let contents = urlMatch.groups.contents;
+
+			if (urlMatch.groups.isBase64) {
+				contents = Buffer.from(contents, 'base64').toString('utf-8');
+			} else {
+				contents = decodeURI(contents);
+			}
+
+			try {
+				return JSON.parse(contents.trim());
+			} catch (e) {
+				console.warn(e);
+				return null;
+			}
+		}
+	}
+
+	return null;
 };
 
 /**
@@ -30,7 +69,7 @@ const compileTestDirectory = (compiler, testDirectory, options = {}) => {
 	const filePath = path.join(testDirectory, 'input.scss');
 
 	const file = new Vinyl({
-		cwd: TEST_DIR,
+		cwd: __dirname,
 		base: testDirectory,
 		path: filePath,
 		contents: fs.readFileSync(filePath),
@@ -87,7 +126,7 @@ const OPTS_ASYNC_IMPORTS = {
 			canonicalize(url) {
 				return new Promise(resolve => {
 					setTimeout(() => {
-					resolve(url.startsWith('color:') ? new URL(url) : null);
+						resolve(url.startsWith('color:') ? new URL(url) : null);
 					}, 500);
 				});
 			},
@@ -98,10 +137,10 @@ const OPTS_ASYNC_IMPORTS = {
 			load(url) {
 				return new Promise(resolve => {
 					setTimeout(() => {
-					resolve({
-						contents: `body { color: ${url.pathname}; }`,
-						syntax: 'scss',
-					});
+						resolve({
+							contents: `body { color: ${url.pathname}; }`,
+							syntax: 'scss',
+						});
 					}, 500);
 				});
 			},
@@ -154,7 +193,7 @@ describe.each([
 		}).rejects.toThrow(/^expected/iu);
 	});
 
-	test('File\'s atimeMs, mtimeMs, and ctimeMs stats are updated', async () => {
+	test("File's atimeMs, mtimeMs, and ctimeMs stats are updated", async () => {
 		const testDirectory = path.join(TEST_DIR, 'imports');
 		const testFile = path.join(testDirectory, 'input.scss');
 		const stats = fs.statSync(testFile);
@@ -164,6 +203,38 @@ describe.each([
 		expect(file.stat.atimeMs).toBeGreaterThan(stats.atimeMs);
 		expect(file.stat.mtimeMs).toBeGreaterThan(stats.mtimeMs);
 		expect(file.stat.ctimeMs).toBeGreaterThan(stats.ctimeMs);
+	});
+
+	describe('gulp', () => {
+		describe('gulp-sourcemaps', () => {
+			test('Works with gulp-sourcemaps', () => {
+				const filePath = path.join(TEST_DIR, 'source-maps', 'input.scss');
+
+				return new Promise((resolve, reject) => {
+					gulp.src(filePath)
+						.pipe(sourcemaps.init())
+						.pipe(compiler(sass))
+						.pipe(sourcemaps.write())
+						.pipe(tap(file => {
+							try {
+								expect(file).toHaveProperty('sourceMap');
+								expect(extractSourceMap(file.contents)).toMatchObject({
+									file: 'input.css',
+									names: [],
+									sources: [
+										/\/_imported.scss$/,
+									],
+								});
+							} catch (e) {
+								reject(e);
+							}
+						}))
+						.on('finish', () => {
+							resolve();
+						});
+				});
+			});
+		});
 	});
 });
 
@@ -193,5 +264,44 @@ describe('normalise()', () => {
 		const a = ' test\r\nline\r\n ';
 
 		expect(normalise(a)).toBe('test\nline');
+	});
+});
+
+describe('extractSourceMap()', () => {
+	const INPUT = {
+		version: 3,
+		sourceRoot: '',
+		sources: ['_imported.scss'],
+		names: [],
+		mappings: 'AAAA,KACC',
+		file: 'expected.css',
+	};
+
+	const URL_ENCODED_INPUT = [
+		'/*# sourceMappingURL=',
+		'data:application/json,',
+		encodeURI(JSON.stringify(INPUT)),
+		' */',
+	].join('');
+
+	const BASE64_INPUT = [
+		'/*# sourceMappingURL=',
+		'data:application/json;base64,',
+		Buffer.from(JSON.stringify(INPUT), 'utf-8').toString('base64'),
+		' */',
+	].join('');
+
+	test('Extracts JSON from URL-encoded source-map', () => {
+		const result = extractSourceMap(URL_ENCODED_INPUT);
+
+		expect(result).not.toBeNull();
+		expect(result).toMatchObject(INPUT);
+	});
+
+	test('Extracts JSON from base64 encoded source-map', () => {
+		const result = extractSourceMap(BASE64_INPUT);
+
+		expect(result).not.toBeNull();
+		expect(result).toMatchObject(INPUT);
 	});
 });
