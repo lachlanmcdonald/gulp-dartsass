@@ -83,7 +83,8 @@ Tests are written with [Jest](https://jestjs.io/). However, as the virtualisatio
 
 ### Implementation notes
 
-- This task does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
+- This plugin does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
+- This plugin does not support Sass's legacy API options.
 - Passing a character-encodings other than UTF-8 is not explicitly disallowed, but the results are indeterminate.
 
 ## License
