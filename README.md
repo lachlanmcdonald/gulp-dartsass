@@ -48,7 +48,7 @@ function compile() {
 exports.styles = compile;
 ```
 
-## API
+### API
 
 **gulp-dartsass** exports both a sync and async factory method with the following signature:
 
@@ -61,7 +61,7 @@ Where:
 - `SassCompiler` must be the [**sass** package][sass-npm].
 - `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [options accepted by Sass](https://sass-lang.com/documentation/js-api/interfaces/options/).
 
-## Sourcemaps
+### Sourcemaps
 
 Gulp's `src` and `dest` built-in support for sourcemaps is the preferred way to use include sourcemaps in your output. However, **gulp-dartsass** will also function with [gulp-sourcemaps].
 
@@ -75,12 +75,12 @@ const sass = require('sass');
 	.pipe(dest('./css', { sourcemaps: true }));
 ```
 
-## Implementation notes
+### Implementation notes
 
 - This task does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
 - Passing a character-encodings other than UTF-8 is not explicitly disallowed, but the results are indeterminate.
 
-## Licenses
+## License
 
 This repository is licensed under the [MIT license][license-link].
 
