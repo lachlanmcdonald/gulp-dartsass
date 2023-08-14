@@ -1,7 +1,7 @@
 {
-	"name": "gulp-dartsass",
-	"version": "0.1.0",
-	"description": "",
+	"name": "@lmcd/gulp-dartsass",
+	"version": "0.1.0-beta.1",
+	"description": "Sass-wrapper for Gulp with support for the modern Dart Sass APIs.",
 	"main": "index.js",
 	"scripts": {
 		"test": "jest",
@@ -10,6 +10,11 @@
 	"engines": {
 		"node": ">=16"
 	},
+	"files": [
+		"README.md",
+		"LICENSE",
+		"index.js"
+	],
 	"keywords": [
 		"gulpplugin",
 		"sass",
@@ -37,5 +42,13 @@
 		"sass": "^1.65.1",
 		"through2": "^4.0.2",
 		"vinyl-sourcemaps-apply": "^0.2.1"
-	}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lachlanmcdonald/gulp-dartsass.git"
+	},
+	"bugs": {
+		"url": "https://github.com/lachlanmcdonald/gulp-dartsass/issues"
+	},
+	"homepage": "https://github.com/lachlanmcdonald/gulp-dartsass#readme"
 }
