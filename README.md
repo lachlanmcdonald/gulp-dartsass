@@ -4,6 +4,8 @@
 
 **gulp-dartsass** is a [Sass]-wrapper for [Gulp] with support for the modern API's custom file importers and functions.
 
+> __Beta release:__ The package version will remain in beta until it can be more thoroughly tested in production. Whilst the existing tests are comprehensive, it has not been tested as a drop-in replacement for _gulp-sass_ and some edge-cases are likely to exist.
+
 ## Installation
 
 To use **gulp-dartsass**, you must install both **gulp-dartsass** itself and the [**sass** package][sass-npm].
