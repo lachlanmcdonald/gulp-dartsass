@@ -1,5 +1,7 @@
 # @lmcd/gulp-dartsass
 
+[![Build](https://github.com/lachlanmcdonald/gulp-dartsass/actions/workflows/build.yml/badge.svg?branch=main)][build-link] [![npm version](https://badge.fury.io/js/%40lachlanmcdonald%2Fgulp-dartsass.svg)][package-link] [![License](https://img.shields.io/badge/License-MIT-blue.svg)][license-link] 
+
 **gulp-dartsass** is a [Sass]-wrapper for [Gulp] with support for the modern API's custom file importers and functions.
 
 ## Installation
@@ -80,10 +82,12 @@ const sass = require('sass');
 
 ## Licenses
 
-This repository is licensed under the [MIT license][license].
+This repository is licensed under the [MIT license][license-link].
 
 [sass-npm]: https://www.npmjs.com/package/sass
 [Sass]: https://sass-lang.com/
 [Gulp]: https://gulpjs.com/
 [gulp-sourcemaps]: https://www.npmjs.com/package/gulp-sourcemaps
-[license]: https://github.com/lachlanmcdonald/gulp-dartsass/blob/main/LICENSE
+[license-link]: https://github.com/lachlanmcdonald/gulp-dartsass/blob/main/LICENSE
+[build-link]: https://github.com/lachlanmcdonald/gulp-dartsass/actions
+[package-link]: https://www.npmjs.com/package/@lmcd/gulp-dartsass
