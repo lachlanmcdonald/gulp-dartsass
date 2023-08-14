@@ -48,7 +48,7 @@ exports.styles = compile;
 
 ## API
 
-**@lmcd/gulp-dartsass** exports both a sync and async factory method with the following signature:
+**gulp-dartsass** exports both a sync and async factory method with the following signature:
 
 ```js
 (sass: SassCompiler, options?: Record<string, any>)
@@ -59,7 +59,20 @@ Where:
 - `SassCompiler` must be the [**sass** package][sass-npm].
 - `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [options accepted by Sass](https://sass-lang.com/documentation/js-api/interfaces/options/).
 
+## Sourcemaps
+
+Gulp's `src` and `dest` built-in support for sourcemaps is the preferred way to use include sourcemaps in your output. However, **gulp-dartsass** will also function with [gulp-sourcemaps].
+
+```js
+const { src, dest } = require('gulp');
+const { sync } = require('@lmcd/gulp-dartsass');
+ 
+.src('./sass/**/*.scss', { sourcemaps: true })
+	.pipe(sync())
+	.pipe(dest('./css', { sourcemaps: true }));
+```
 
 [sass-npm]: https://www.npmjs.com/package/sass
 [Sass]: https://sass-lang.com/
 [Gulp]: https://gulpjs.com/
+[gulp-sourcemaps]: https://www.npmjs.com/package/gulp-sourcemaps

@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 *.local
 
+# Output from gulp.dest in tests
+tests/**/results
+
 # dist
 dist
 

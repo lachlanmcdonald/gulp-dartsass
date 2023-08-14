@@ -6,6 +6,7 @@ const gulp = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const tap = require('gulp-tap');
 const { async, sync } = require('.');
+const replaceExt = require('replace-ext');
 
 const TEST_DIR = path.join(__dirname, 'tests');
 
@@ -20,7 +21,7 @@ const normalise = input => {
 };
 
 /**
- * Hastily decode the JSON of an embedded source-map within a buffer. Handles URI and Base64 encoding,
+ * Hastily decode the JSON of an embedded sourcemap within a buffer. Handles URI and Base64 encoding,
  * but otherwise this function is only intended for these tests and not a universal solution.
  *
  * @param {Buffer} buffer
@@ -206,34 +207,86 @@ describe.each([
 	});
 
 	describe('gulp', () => {
-		describe('gulp-sourcemaps', () => {
-			test('Works with gulp-sourcemaps', () => {
-				const filePath = path.join(TEST_DIR, 'source-maps', 'input.scss');
+		const filePath = path.join(TEST_DIR, 'sourcemaps', 'input.scss');
+		const outputPath = path.join(path.dirname(filePath), 'results');
 
-				return new Promise((resolve, reject) => {
-					gulp.src(filePath)
-						.pipe(sourcemaps.init())
-						.pipe(compiler(sass))
-						.pipe(sourcemaps.write())
-						.pipe(tap(file => {
-							try {
-								expect(file).toHaveProperty('sourceMap');
-								expect(extractSourceMap(file.contents)).toMatchObject({
-									file: 'input.css',
-									names: [],
-									sources: [
-										/\/_imported.scss$/,
-									],
-								});
-							} catch (e) {
-								reject(e);
-							}
-						}))
-						.on('finish', () => {
-							resolve();
-						});
-				});
+		const trashResults = () => {
+			fs.readdirSync(outputPath, 'utf-8').forEach(file => {
+				if (['.css', '.map'].includes(path.extname(file))) {
+					fs.unlinkSync(path.join(outputPath, file));
+				}
 			});
+		};
+
+		beforeAll(trashResults);
+		afterEach(trashResults);
+
+		test('Works with gulp-sourcemaps', () => {
+			return new Promise((resolve, reject) => {
+				gulp.src(filePath)
+					.pipe(sourcemaps.init())
+					.pipe(compiler(sass))
+					.pipe(sourcemaps.write())
+					.pipe(tap(file => {
+						try {
+							expect(file).toHaveProperty('sourceMap');
+							expect(extractSourceMap(file.contents)).toMatchObject({
+								file: replaceExt(path.basename(filePath), '.css'),
+								names: [],
+								sources: [
+									/\/_imported.scss$/,
+								],
+							});
+						} catch (e) {
+							reject(e);
+						}
+					}))
+					.on('finish', () => {
+						resolve();
+					});
+			});
+		});
+
+		test('Works with internal inlined sourcemap support', async () => {
+			await new Promise(resolve => {
+				gulp.src(filePath, { sourcemaps: true })
+					.pipe(compiler(sass))
+					.pipe(gulp.dest(outputPath, {
+						sourcemaps: true,
+					}))
+					.on('finish', () => {
+						resolve();
+					});
+			});
+
+			const outputFile = path.join(outputPath, 'input.css');
+			const outputContents = fs.readFileSync(outputFile);
+
+			expect(extractSourceMap(outputContents)).toMatchObject({
+				file: path.basename(outputFile),
+				names: [],
+				sources: [
+					/\/_imported.scss$/,
+				],
+			});
+		});
+
+		test('Works with internal external sourcemap support', async () => {
+			await new Promise(resolve => {
+				gulp.src(filePath, { sourcemaps: true })
+					.pipe(compiler(sass))
+					.pipe(gulp.dest(outputPath, {
+						sourcemaps: '.',
+					}))
+					.on('finish', () => {
+						resolve();
+					});
+			});
+
+			const outputFile = path.join(outputPath, 'input.css');
+			const outputContents = fs.readFileSync(outputFile, 'utf-8');
+
+			expect(outputContents).toMatch(/sourceMappingURL=input\.css\.map/);
 		});
 	});
 });
@@ -291,14 +344,14 @@ describe('extractSourceMap()', () => {
 		' */',
 	].join('');
 
-	test('Extracts JSON from URL-encoded source-map', () => {
+	test('Extracts JSON from URL-encoded sourcemap', () => {
 		const result = extractSourceMap(URL_ENCODED_INPUT);
 
 		expect(result).not.toBeNull();
 		expect(result).toMatchObject(INPUT);
 	});
 
-	test('Extracts JSON from base64 encoded source-map', () => {
+	test('Extracts JSON from base64 encoded sourcemap', () => {
 		const result = extractSourceMap(BASE64_INPUT);
 
 		expect(result).not.toBeNull();
