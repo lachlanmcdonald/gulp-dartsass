@@ -77,6 +77,10 @@ const sass = require('sass');
 	.pipe(dest('./css', { sourcemaps: true }));
 ```
 
+### Tests
+
+Tests are written with [Jest](https://jestjs.io/). However, as the virtualisation employed by Jest is not presently compatible with Sass, [jest-light-runner](https://github.com/nicolo-ribaudo/jest-light-runner) is used as the runner.
+
 ### Implementation notes
 
 - This task does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
