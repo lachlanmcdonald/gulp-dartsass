@@ -24,7 +24,6 @@ const PLUGIN_NAME = 'gulp-dartsass';
  * @param {boolean} async
  * @param {SassCompiler} sass
  * @param {Record<string, any>} options
- * @returns
  */
 const gulpDartSass = (async, sass, options) => {
 	const handleResult = (file, result, callback) => {

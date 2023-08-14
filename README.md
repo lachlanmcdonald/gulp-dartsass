@@ -17,13 +17,14 @@ npm install --save-dev @lmcd/gulp-dartsass sass
 For _sync compilation_:
 
 ```js
-const sass = require('sass');
+const { src, dest } = require('gulp');
 const { sync } = require('@lmcd/gulp-dartsass');
+const sass = require('sass');
 
 function compile() {
-	return gulp.src('./sass/**/*.scss')
-		.pipe(sync())
-		.pipe(gulp.dest('./css'));
+	return src('./sass/**/*.scss')
+		.pipe(sync(sass))
+		.pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -32,13 +33,14 @@ exports.styles = compile;
 Or for _async compilation_:
 
 ```js
-const sass = require('sass');
+const { src, dest } = require('gulp');
 const { async } = require('@lmcd/gulp-dartsass');
+const sass = require('sass');
 
 function compile() {
-	return gulp.src('./sass/**/*.scss')
-		.pipe(async())
-		.pipe(gulp.dest('./css'));
+	return src('./sass/**/*.scss')
+		.pipe(async(sass))
+		.pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -64,6 +66,7 @@ Gulp's `src` and `dest` built-in support for sourcemaps is the preferred way to 
 ```js
 const { src, dest } = require('gulp');
 const { sync } = require('@lmcd/gulp-dartsass');
+const sass = require('sass');
  
 .src('./sass/**/*.scss', { sourcemaps: true })
 	.pipe(sync())
