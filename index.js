@@ -87,7 +87,7 @@ const gulpDartSass = (async, sass, options) => {
 		}
 
 		if (async) {
-			return sass.compileStringAsync(file.contents.toString(), {
+			return sass.compileStringAsync(file.contents.toString('utf-8'), {
 				...sassOptions,
 				...options || {},
 			}).then(result => {
@@ -97,7 +97,7 @@ const gulpDartSass = (async, sass, options) => {
 			});
 		} else {
 			try {
-				const result = sass.compileString(file.contents.toString(), {
+				const result = sass.compileString(file.contents.toString('utf-8'), {
 					...sassOptions,
 					...options || {},
 				});

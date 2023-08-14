@@ -10,8 +10,6 @@ To use **gulp-dartsass**, you must install both **gulp-dartsass** itself and the
 npm install --save-dev @lmcd/gulp-dartsass sass
 ```
 
-**Note:** This task does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
-
 ## Usage
 
 **gulp-dartsass** supports both _sync_ and _async_ compilation. You should only use async compilation when utilising async custom importers. Otherwise, sync compilation is preferred for speed.
@@ -72,7 +70,17 @@ const { sync } = require('@lmcd/gulp-dartsass');
 	.pipe(dest('./css', { sourcemaps: true }));
 ```
 
+## Implementation notes
+
+- This task does not support legacy/deprecated versions of sass, such as LibSass/Node Sass. Nor does it support Gulp versions earlier than Gulp 4.
+- Passing a character-encodings other than UTF-8 is not explicitly disallowed, but the results are indeterminate.
+
+## Licenses
+
+This repository is licensed under the [MIT license][license].
+
 [sass-npm]: https://www.npmjs.com/package/sass
 [Sass]: https://sass-lang.com/
 [Gulp]: https://gulpjs.com/
 [gulp-sourcemaps]: https://www.npmjs.com/package/gulp-sourcemaps
+[license]: https://github.com/lachlanmcdonald/gulp-dartsass/blob/main/LICENSE
