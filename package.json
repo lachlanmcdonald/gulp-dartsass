@@ -14,7 +14,9 @@
 		"gulpplugin",
 		"sass",
 		"gulp",
-		"gulp-sass"
+		"gulp-sass",
+		"css",
+		"scss"
 	],
 	"author": "",
 	"license": "MIT",
