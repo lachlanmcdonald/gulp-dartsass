@@ -26,9 +26,9 @@ const { sync } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
 
 function compile() {
-	return src('./sass/**/*.scss')
-		.pipe(sync(sass))
-		.pipe(dest('./css'));
+  return src('./sass/**/*.scss')
+    .pipe(sync(sass))
+    .pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -42,9 +42,9 @@ const { async } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
 
 function compile() {
-	return src('./sass/**/*.scss')
-		.pipe(async(sass))
-		.pipe(dest('./css'));
+  return src('./sass/**/*.scss')
+    .pipe(async(sass))
+    .pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -73,8 +73,8 @@ const { sync } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
  
 .src('./sass/**/*.scss', { sourcemaps: true })
-	.pipe(sync())
-	.pipe(dest('./css', { sourcemaps: true }));
+  .pipe(sync())
+  .pipe(dest('./css', { sourcemaps: true }));
 ```
 
 ### Tests
