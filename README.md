@@ -1,6 +1,6 @@
 # @lmcd/gulp-dartsass
 
-[![Build](https://github.com/lachlanmcdonald/gulp-dartsass/actions/workflows/build.yml/badge.svg?branch=main)][build-link] [![npm version](https://badge.fury.io/js/%40lachlanmcdonald%2Fgulp-dartsass.svg)][package-link] [![License](https://img.shields.io/badge/License-MIT-blue.svg)][license-link] 
+[![Build](https://github.com/lachlanmcdonald/gulp-dartsass/actions/workflows/build.yml/badge.svg?branch=main)][build-link] [![npm version](https://badge.fury.io/js/%40lmcd%2Fgulp-dartsass.svg)][package-link] [![License](https://img.shields.io/badge/License-MIT-blue.svg)][license-link] 
 
 **gulp-dartsass** is a [Sass]-wrapper for [Gulp] with support for the modern API's custom file importers and functions.
 
@@ -26,9 +26,9 @@ const { sync } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
 
 function compile() {
-	return src('./sass/**/*.scss')
-		.pipe(sync(sass))
-		.pipe(dest('./css'));
+  return src('./sass/**/*.scss')
+    .pipe(sync(sass))
+    .pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -42,9 +42,9 @@ const { async } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
 
 function compile() {
-	return src('./sass/**/*.scss')
-		.pipe(async(sass))
-		.pipe(dest('./css'));
+  return src('./sass/**/*.scss')
+    .pipe(async(sass))
+    .pipe(dest('./css'));
 };
 
 exports.styles = compile;
@@ -61,7 +61,7 @@ exports.styles = compile;
 Where:
 
 - `SassCompiler` must be the [**sass** package][sass-npm].
-- `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [options accepted by Sass](https://sass-lang.com/documentation/js-api/interfaces/options/).
+- `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [`StringOptionsWithImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithimporter/) options accepted by Sass.
 
 ### Sourcemaps
 
@@ -73,8 +73,8 @@ const { sync } = require('@lmcd/gulp-dartsass');
 const sass = require('sass');
  
 .src('./sass/**/*.scss', { sourcemaps: true })
-	.pipe(sync())
-	.pipe(dest('./css', { sourcemaps: true }));
+  .pipe(sync())
+  .pipe(dest('./css', { sourcemaps: true }));
 ```
 
 ### Tests
