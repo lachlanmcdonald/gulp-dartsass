@@ -61,7 +61,7 @@ exports.styles = compile;
 Where:
 
 - `SassCompiler` must be the [**sass** package][sass-npm].
-- `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [options accepted by Sass](https://sass-lang.com/documentation/js-api/interfaces/options/).
+- `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [`StringOptionsWithImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithimporter/) options accepted by Sass.
 
 ### Sourcemaps
 
