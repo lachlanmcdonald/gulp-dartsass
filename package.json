@@ -44,13 +44,13 @@
 		"gulp-tap": "^2.0.0",
 		"jest": "^29.7.0",
 		"jest-light-runner": "^0.5.1",
+		"sass": "^1.67.0",
 		"vinyl": "^3.0.0"
 	},
 	"dependencies": {
 		"chalk": "^5.3.0",
 		"plugin-error": "^2.0.1",
 		"replace-ext": "^2.0.0",
-		"sass": "^1.67.0",
 		"through2": "^4.0.2",
 		"vinyl-sourcemaps-apply": "^0.2.1"
 	}
