@@ -26,8 +26,8 @@ devDependencies:
     specifier: ^0.5.0
     version: 0.5.0(eslint@8.46.0)
   eslint-plugin-jest:
-    specifier: ^27.4.0
-    version: 27.4.0(eslint@8.46.0)(jest@29.7.0)(typescript@5.1.6)
+    specifier: ^27.6.0
+    version: 27.6.0(eslint@8.46.0)(jest@29.7.0)(typescript@5.1.6)
   gulp:
     specifier: ^4.0.2
     version: 4.0.2
@@ -44,8 +44,8 @@ devDependencies:
     specifier: ^0.5.1
     version: 0.5.1(jest@29.7.0)
   sass:
-    specifier: ^1.67.0
-    version: 1.67.0
+    specifier: ^1.69.5
+    version: 1.69.5
   vinyl:
     specifier: ^3.0.0
     version: 3.0.0
@@ -2232,8 +2232,8 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-jest@27.4.0(eslint@8.46.0)(jest@29.7.0)(typescript@5.1.6):
-    resolution: {integrity: sha512-ukVeKmMPAUA5SWjHenvyyXnirKfHKMdOsTZdn5tZx5EW05HGVQwBohigjFZGGj3zuv1cV6hc82FvWv6LdIbkgg==}
+  /eslint-plugin-jest@27.6.0(eslint@8.46.0)(jest@29.7.0)(typescript@5.1.6):
+    resolution: {integrity: sha512-MTlusnnDMChbElsszJvrwD1dN3x6nZl//s4JD23BxB6MgR66TZlL064su24xEIS3VACfAoHV1vgyMgPw8nkdng==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': ^5.0.0 || ^6.0.0
@@ -5284,8 +5284,8 @@ packages:
       ret: 0.1.15
     dev: true
 
-  /sass@1.67.0:
-    resolution: {integrity: sha512-SVrO9ZeX/QQyEGtuZYCVxoeAL5vGlYjJ9p4i4HFuekWl8y/LtJ7tJc10Z+ck1c8xOuoBm2MYzcLfTAffD0pl/A==}
+  /sass@1.69.5:
+    resolution: {integrity: sha512-qg2+UCJibLr2LCVOt3OlPhr/dqVHWOa9XtZf2OjbLs/T4VPSJ00udtgJxH3neXZm+QqX8B+3cU7RaLqp1iVfcQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
