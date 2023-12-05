@@ -8,7 +8,16 @@ const PACKAGE_NAME = 'sass';
 const METADATA_URL = `https://registry.npmjs.org/${PACKAGE_NAME}`;
 const DATA_URL = `https://api.npmjs.org/versions/${PACKAGE_NAME}/last-week`;
 
-// Function to download a file
+// Remove previous test files
+const TEST_FILE_PATTERN = /index\.sass-\d+\.\d+\.\d+\.test\.js/;
+
+fs.readdirSync(path.join(__dirname, '..'), 'utf-8').forEach(file => {
+	if (TEST_FILE_PATTERN.test(file)) {
+		fs.unlinkSync(path.join(__dirname, '..', file));
+	}
+});
+
+// Fetch file
 const fetch = url => {
 	return new Promise((resolve, reject) => {
 		https.get(url, response => {
@@ -31,16 +40,19 @@ Promise.all([
 	fetch(METADATA_URL),
 	fetch(DATA_URL),
 ]).then(([metadata, downloadData]) => {
-	// Get three most recent versions
-	const recentVersions = Object.keys(metadata.versions).slice(-10);
+	// Get most recent versions
+	const recentVersions = Object.keys(metadata.versions).slice(-5);
 
-	// Get eight of the top downloaded versions this week
+	// Get the top downloaded versions this week
 	// const topVersions = Object.entries(downloadData.downloads).sort((a, b) => {
 	// 	return b[1] - a[1];
-	// }).slice(0, 8).map(x => x[0]);
+	// }).slice(0, 10).map(x => x[0]);
 
 	// Target versions
-	const targetVersions = new Set([...recentVersions/* , ...topVersions */]);
+	const targetVersions = new Set([
+		...recentVersions,
+		// ...topVersions,
+	]);
 
 	// Parse package.json and remove the existing sass dependencies
 	const package = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf-8'));
@@ -56,36 +68,19 @@ Promise.all([
 
 	// Add dependencies for new versions
 	targetVersions.forEach(version => {
-		package.devDependencies[`sass-${version}`] = `npm:sass@${version}`;
+		package.devDependencies[`sass-${ version }`] = `npm:sass@${ version }`;
 	});
 
 	// Update package.json
 	fs.writeFileSync(PACKAGE_JSON_PATH, JSON.stringify(package, null, 2), 'utf-8');
 
 	// Read test script
-	const pattern = /\/\/ DO NOT UPDATE BELOW.*\/\/ DO NOT UPDATE ABOVE[^\n]+/gis;
-	let testScript = fs.readFileSync(TEST_SCRIPT_PATH, 'utf-8');
+	// /* const pattern = /\/\/ DO NOT UPDATE BELOW.*\/\/ DO NOT UPDATE ABOVE[^\n]+/gis;
+	const testScript = fs.readFileSync(TEST_SCRIPT_PATH, 'utf-8');
 
-	const testUpdates = [
-		'// DO NOT UPDATE BELOW - THIS SECTION IS AUTOMATICALLY GENERATED',
-		"const sass = require('sass');",
-		...Array.from(targetVersions).map(version => {
-			const name = `sass_${version}`.replace(/\./g, '_');
+	targetVersions.forEach(version => {
+		const contents = testScript.replace("const sass = require('sass');", `const sass = require('sass-${ version }');`);
 
-			return `const ${name} = require('sass-${version}'); // ${version}`;
-		}).sort(),
-		'',
-		'const SASS_VERSIONS = {',
-		...Array.from(targetVersions).map(version => {
-			const name = `sass_${version}`.replace(/\./g, '_');
-
-			return `\t'${version}': ${name},`;
-		}).sort(),
-		'};',
-		'// DO NOT UPDATE ABOVE - THIS SECTION IS AUTOMATICALLY GENERATED',
-	];
-
-	testScript = testScript.replace(pattern, testUpdates.join('\n'));
-
-	fs.writeFileSync(TEST_SCRIPT_PATH, testScript, 'utf-8');
+		fs.writeFileSync(path.join(path.dirname(TEST_SCRIPT_PATH), `index.sass-${ version }.test.js`), contents, 'utf-8');
+	});
 });
