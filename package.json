@@ -4,9 +4,8 @@
   "description": "Sass-wrapper for Gulp with support for the modern Dart Sass APIs.",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand",
-    "lint": "eslint --report-unused-disable-directives --fix .",
-    "update:test": "node tests/compile.js; node ./scripts/update-test-deps.js"
+    "test": "node tests/compile.js; node ./scripts/update-test-deps.js; jest --runInBand",
+    "lint": "eslint --report-unused-disable-directives --fix ."
   },
   "engines": {
     "node": ">=16"
