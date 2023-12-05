@@ -48,7 +48,7 @@
 		"vinyl": "^3.0.0"
 	},
 	"dependencies": {
-		"chalk": "^5.3.0",
+		"chalk": "^4.1.2",
 		"plugin-error": "^2.0.1",
 		"replace-ext": "^2.0.0",
 		"through2": "^4.0.2",
