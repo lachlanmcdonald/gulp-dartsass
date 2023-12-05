@@ -5,7 +5,8 @@
 		"@lmcd/eslint-config"
 	],
 	"plugins": [
-		"jest"
+		"jest",
+		"@stylistic/js"
 	],
 	"parserOptions": {
 		"ecmaVersion": "latest"
