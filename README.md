@@ -50,7 +50,11 @@ exports.styles = compile;
 
 ### API
 
-**gulp-dartsass** exports both a sync and async factory method with the following signature:
+```js
+const { sync, async } = require('@lmcd/gulp-dartsass');
+```
+
+**gulp-dartsass** exports both `sync` and `async` factory methods with the following signature:
 
 ```js
 (sass: SassCompiler, options?: Record<string, any>)
@@ -59,7 +63,7 @@ exports.styles = compile;
 Where:
 
 - `SassCompiler` must be the [**sass** package][sass-npm].
-- `options` can be any key-value pairs, but as these are passed directly to Sass, should use the [`StringOptionsWithImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithimporter/) options accepted by Sass.
+- `options` is passed directly to Sass and should match [`StringOptionsWithImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithimporter/) or [`StringOptionsWithoutImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithoutimporter/).
 
 ### Sourcemaps
 
