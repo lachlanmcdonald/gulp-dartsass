@@ -14,8 +14,5 @@
 		"jest/globals": true,
 		"es6": true,
 		"node": true
-	},
-	"rules": {
-		"require-unicode-regexp": "off"
 	}
 }
