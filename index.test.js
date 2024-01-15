@@ -109,7 +109,7 @@ const OPTS_SYNC_IMPORTS = {
 			 */
 			load(url) {
 				return {
-					contents: `body { color: ${url.pathname}; }`,
+					contents: `body { color: ${ url.pathname }; }`,
 					syntax: 'scss',
 				};
 			},
@@ -139,7 +139,7 @@ const OPTS_ASYNC_IMPORTS = {
 				return new Promise(resolve => {
 					setTimeout(() => {
 						resolve({
-							contents: `body { color: ${url.pathname}; }`,
+							contents: `body { color: ${ url.pathname }; }`,
 							syntax: 'scss',
 						});
 					}, 500);

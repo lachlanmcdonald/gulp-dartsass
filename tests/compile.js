@@ -24,7 +24,7 @@ TEST_DIRECTORIES.forEach(testDirectory => {
 		let syntax = null;
 		let url = null;
 
-		console.log(`${chalk.underline(testDirectory)}`);
+		console.log(`${ chalk.underline(testDirectory) }`);
 
 		if (fs.existsSync(inputSassPath)) {
 			url = pathToFileURL(inputSassPath);
