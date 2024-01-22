@@ -1,6 +1,6 @@
 {
 	"name": "@lmcd/gulp-dartsass",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Sass-wrapper for Gulp with support for the modern Dart Sass APIs.",
 	"main": "index.js",
 	"scripts": {
