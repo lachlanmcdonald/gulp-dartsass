@@ -63,7 +63,7 @@ const { sync, async } = require('@lmcd/gulp-dartsass');
 Where:
 
 - `SassCompiler` must be the [**sass** package][sass-npm].
-- `options` is passed directly to Sass and should match [`StringOptionsWithImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithimporter/) or [`StringOptionsWithoutImporter`](https://sass-lang.com/documentation/js-api/interfaces/stringoptionswithoutimporter/).
+- `options` is passed directly to Sass and should match Sass' [Options] interface.
 
 ### Sourcemaps
 
@@ -100,3 +100,4 @@ This repository is licensed under the [MIT license][license-link].
 [license-link]: https://github.com/lachlanmcdonald/gulp-dartsass/blob/main/LICENSE
 [build-link]: https://github.com/lachlanmcdonald/gulp-dartsass/actions
 [package-link]: https://www.npmjs.com/package/@lmcd/gulp-dartsass
+[Options]: https://sass-lang.com/documentation/js-api/interfaces/options/
