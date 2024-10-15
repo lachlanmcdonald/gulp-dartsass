@@ -310,7 +310,7 @@ describe(`Sync compilation`, () => {
 });
 
 describe('normalise()', () => {
-	test('Trims', () => {
+	test('Normalises whitespace', () => {
 		const a = ' test\r\nline\r\n ';
 
 		expect(normalise(a)).toBe('test\nline');
