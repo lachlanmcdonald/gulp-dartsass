@@ -1,9 +1,9 @@
-const PluginError = require('plugin-error');
-const replaceExtension = require('replace-ext');
-const path = require('path');
-const { pathToFileURL } = require('url');
-const applySourceMap = require('vinyl-sourcemaps-apply');
-const { Transform } = require('readable-stream');
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import PluginError from 'plugin-error';
+import { Transform } from 'stream';
+import replaceExtension from 'replace-ext';
+import applySourceMap from 'vinyl-sourcemaps-apply';
 
 const PLUGIN_NAME = 'gulp-dartsass';
 
@@ -21,11 +21,11 @@ const PLUGIN_NAME = 'gulp-dartsass';
  */
 
 /**
- * @param {boolean} async
+ * @param {boolean} isAsync
  * @param {SassCompiler} sass
  * @param {Record<string, any>} options
  */
-const gulpDartSass = (async, sass, options) => {
+const gulpDartSass = (isAsync, sass, options) => {
 	const handleResult = (file, result, callback) => {
 		file.contents = Buffer.from(result.css, 'utf-8');
 		file.path = replaceExtension(file.path, '.css');
@@ -74,22 +74,22 @@ const gulpDartSass = (async, sass, options) => {
 				return callback(null, file);
 			}
 
-			const sassOptions = {
+			const defaultOptions = {
 				syntax: 'scss',
 				url: pathToFileURL(file.path).toString(),
 			};
 
 			// Generate Source Maps
-			sassOptions.sourceMap = Boolean(file.sourceMap);
+			defaultOptions.sourceMap = Boolean(file.sourceMap);
 
 			// Update syntax to reflect the file-extension
 			if (path.extname(file.path) === '.sass') {
-				sassOptions.syntax = 'indented';
+				defaultOptions.syntax = 'indented';
 			}
 
-			if (async) {
+			if (isAsync) {
 				return sass.compileStringAsync(file.contents.toString('utf-8'), {
-					...sassOptions,
+					...defaultOptions,
 					...options || {},
 				}).then(result => {
 					return handleResult(file, result, callback);
@@ -99,7 +99,7 @@ const gulpDartSass = (async, sass, options) => {
 			} else {
 				try {
 					const result = sass.compileString(file.contents.toString('utf-8'), {
-						...sassOptions,
+						...defaultOptions,
 						...options || {},
 					});
 
@@ -112,21 +112,18 @@ const gulpDartSass = (async, sass, options) => {
 	});
 };
 
-module.exports = {
-	/**
-	 * @param {SassCompiler} sass
-	 * @param {Record<string, any>} [options]
-	 * @returns
-	 */
-	sync(sass, options) {
-		return gulpDartSass(false, sass, options);
-	},
-	/**
-	 * @param {SassCompiler} sass
-	 * @param {Record<string, any>} [options]
-	 * @returns
-	 */
-	async(sass, options) {
-		return gulpDartSass(true, sass, options);
-	},
+/**
+ * @param {SassCompiler} sass
+ * @param {Record<string, any>} [options]
+ */
+export const sync = (sass, options) => {
+	return gulpDartSass(false, sass, options);
+};
+
+/**
+ * @param {SassCompiler} sass
+ * @param {Record<string, any>} [options]
+ */
+export const async = (sass, options) => {
+	return gulpDartSass(true, sass, options);
 };
