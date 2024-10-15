@@ -160,7 +160,7 @@ const OPTS_ASYNC_IMPORTS = {
 describe.each([
 	['Async', async],
 	['Sync', sync],
-])(`%s compilation`, (_name, compiler) => {
+])(`%s compilation`, (_name, plugin) => {
 	test.each([
 		['Compiles @import directive', 'imports', {}],
 		['Compiles empty input file', 'empty', {}],
@@ -171,7 +171,7 @@ describe.each([
 	])('%s', async (_message, directoryName, options) => {
 		const testDirectory = path.join(TEST_DIR, directoryName);
 		const expected = normalise(fs.readFileSync(path.join(testDirectory, 'expected.css'), 'utf-8'));
-		const file = await compileTestDirectory(compiler, testDirectory, options);
+		const file = await compileTestDirectory(plugin, testDirectory, options);
 
 		expect(path.extname(file.path)).toBe('.css');
 		expect(normalise(file.contents)).toBe(expected);
@@ -186,22 +186,22 @@ describe.each([
 		});
 
 		await expect(() => {
-			return compileVinyl(compiler, file, {
+			return compileVinyl(plugin, file, {
 				style: 'compressed',
 			});
 		}).rejects.toThrow(/^expected/iu);
 	});
 
-	test("File's atimeMs, mtimeMs, and ctimeMs stats are updated", async () => {
+	test("File's atimeMs, mtimeMs, and ctimeMs are updated", async () => {
 		const testDirectory = path.join(TEST_DIR, 'imports');
 		const testFile = path.join(testDirectory, 'input.scss');
-		const stats = fs.statSync(testFile);
+		const testStats = fs.statSync(testFile);
 
-		const file = await compileTestDirectory(sync, testDirectory);
+		const vinyl = await compileTestDirectory(sync, testDirectory);
 
-		expect(file.stat.atimeMs).toBeGreaterThan(stats.atimeMs);
-		expect(file.stat.mtimeMs).toBeGreaterThan(stats.mtimeMs);
-		expect(file.stat.ctimeMs).toBeGreaterThan(stats.ctimeMs);
+		expect(vinyl.stat.atimeMs).toBeGreaterThan(testStats.atimeMs);
+		expect(vinyl.stat.mtimeMs).toBeGreaterThan(testStats.mtimeMs);
+		expect(vinyl.stat.ctimeMs).toBeGreaterThan(testStats.ctimeMs);
 	});
 
 	describe('gulp', () => {
@@ -223,7 +223,7 @@ describe.each([
 			return new Promise((resolve, reject) => {
 				gulp.src(filePath)
 					.pipe(sourcemaps.init())
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(sourcemaps.write())
 					.pipe(tap(file => {
 						try {
@@ -248,7 +248,7 @@ describe.each([
 		test('Works with internal inlined sourcemap support', async () => {
 			await new Promise(resolve => {
 				gulp.src(filePath, { sourcemaps: true })
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(gulp.dest(outputPath, {
 						sourcemaps: true,
 					}))
@@ -272,7 +272,7 @@ describe.each([
 		test('Works with internal external sourcemap support', async () => {
 			await new Promise(resolve => {
 				gulp.src(filePath, { sourcemaps: true })
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(gulp.dest(outputPath, {
 						sourcemaps: '.',
 					}))
