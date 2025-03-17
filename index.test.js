@@ -162,6 +162,7 @@ describe.each([
 	['Sync', sync],
 ])(`%s compilation`, (_name, plugin) => {
 	test.each([
+		['Compiles @import directive', 'imports', {}],
 		['Compiles empty input file', 'empty', {}],
 		['Compiles @use directive', 'use', {}],
 		['Compiles @use directive with named members', 'use-members', {}],
@@ -192,7 +193,7 @@ describe.each([
 	});
 
 	test("File's atimeMs, mtimeMs, and ctimeMs are updated", async () => {
-		const testDirectory = path.join(TEST_DIR, 'use');
+		const testDirectory = path.join(TEST_DIR, 'imports');
 		const testFile = path.join(testDirectory, 'input.scss');
 		const testStats = fs.statSync(testFile);
 
