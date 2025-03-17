@@ -1,14 +1,16 @@
-const Vinyl = require('vinyl');
-const fs = require('fs');
-const path = require('path');
-const sass = require('sass');
-const gulp = require('gulp');
-const sourcemaps = require('gulp-sourcemaps');
-const tap = require('gulp-tap');
-const { async, sync } = require('.');
-const replaceExt = require('replace-ext');
+import gulp from 'gulp';
+import sourcemaps from 'gulp-sourcemaps';
+import tap from 'gulp-tap';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import replaceExt from 'replace-ext';
+import * as sass from 'sass';
+import Vinyl from 'vinyl';
+import { async, sync } from './index.js';
 
-const TEST_DIR = path.join(__dirname, 'tests');
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const TEST_DIR = path.join(CURRENT_DIR, 'tests');
 
 /**
  * Normalises newlines and trims whitespace from the beginning and
@@ -57,40 +59,46 @@ const extractSourceMap = buffer => {
 };
 
 /**
- * Creates a new Vinyl file from `input.scss` in the provided directory,
- * then passes that to the plugin to be compiled. Results are compared
- * with `expected.css` from the provided directory.
- *
- * @param {(sass: any, options: any) => internal.Transform} compiler
- * @param {string} testDirectory
- * @param {sass.Options<"sync" | "async">} options
- * @returns {Promise<Vinyl>}
+ * @param {async|sync} plugin
+ * @param {Vinyl} vinyl
+ * @param {Record<string, any>} sassOptions
  */
-const compileTestDirectory = (compiler, testDirectory, options = {}) => {
+const compileVinyl = (plugin, vinyl, sassOptions) => {
+	return new Promise((resolve, reject) => {
+		const stream = plugin(sass, {
+			style: 'compressed',
+			...sassOptions,
+		}).on('finish', () => {
+			resolve(vinyl);
+		}).on('error', error => {
+			reject(error);
+		});
+
+		// Write file to stream and end stream
+		stream.end(vinyl);
+	});
+};
+
+/**
+ * Creates a new Vinyl file from `input.scss` in the provided directory,
+ * then passes that to the plugin to be compiled.
+ *
+ * @param {async|sync} plugin
+ * @param {string} testDirectory
+ * @param {Record<string, any>} sassOptions
+ */
+const compileTestDirectory = (plugin, testDirectory, sassOptions = {}) => {
 	const filePath = path.join(testDirectory, 'input.scss');
 
 	const file = new Vinyl({
-		cwd: __dirname,
+		cwd: CURRENT_DIR,
 		base: testDirectory,
 		path: filePath,
 		contents: fs.readFileSync(filePath),
 		stat: fs.statSync(filePath),
 	});
 
-	return new Promise((resolve, reject) => {
-		const stream = compiler(sass, {
-			style: 'compressed',
-			...options,
-		}).on('error', error => {
-			reject(error);
-		});
-
-
-		stream.write(file);
-		stream.end(() => {
-			resolve(file);
-		});
-	});
+	return compileVinyl(plugin, file, sassOptions);
 };
 
 const OPTS_SYNC_IMPORTS = {
@@ -152,7 +160,7 @@ const OPTS_ASYNC_IMPORTS = {
 describe.each([
 	['Async', async],
 	['Sync', sync],
-])(`%s compilation`, (_name, compiler) => {
+])(`%s compilation`, (_name, plugin) => {
 	test.each([
 		['Compiles @import directive', 'imports', {}],
 		['Compiles empty input file', 'empty', {}],
@@ -163,47 +171,37 @@ describe.each([
 	])('%s', async (_message, directoryName, options) => {
 		const testDirectory = path.join(TEST_DIR, directoryName);
 		const expected = normalise(fs.readFileSync(path.join(testDirectory, 'expected.css'), 'utf-8'));
-		const file = await compileTestDirectory(compiler, testDirectory, options);
+		const file = await compileTestDirectory(plugin, testDirectory, options);
 
 		expect(path.extname(file.path)).toBe('.css');
 		expect(normalise(file.contents)).toBe(expected);
 	});
 
-	test('Fails on invalid SCSS', () => {
+	test('Fails on invalid SCSS', async () => {
 		const file = new Vinyl({
 			cwd: TEST_DIR,
 			base: TEST_DIR,
-			path: path.join(__dirname, 'invalid.scss'),
+			path: path.join(CURRENT_DIR, 'invalid.scss'),
 			contents: Buffer.from('body { !background: red; }'),
 		});
 
-		expect(() => {
-			return new Promise((resolve, reject) => {
-				const stream = compiler(sass, {
-					style: 'compressed',
-				}).on('error', error => {
-					reject(error);
-				});
-
-
-				stream.write(file);
-				stream.end(() => {
-					resolve(file);
-				});
+		await expect(() => {
+			return compileVinyl(plugin, file, {
+				style: 'compressed',
 			});
 		}).rejects.toThrow(/^expected/iu);
 	});
 
-	test("File's atimeMs, mtimeMs, and ctimeMs stats are updated", async () => {
+	test("File's atimeMs, mtimeMs, and ctimeMs are updated", async () => {
 		const testDirectory = path.join(TEST_DIR, 'imports');
 		const testFile = path.join(testDirectory, 'input.scss');
-		const stats = fs.statSync(testFile);
+		const testStats = fs.statSync(testFile);
 
-		const file = await compileTestDirectory(sync, testDirectory);
+		const vinyl = await compileTestDirectory(sync, testDirectory);
 
-		expect(file.stat.atimeMs).toBeGreaterThan(stats.atimeMs);
-		expect(file.stat.mtimeMs).toBeGreaterThan(stats.mtimeMs);
-		expect(file.stat.ctimeMs).toBeGreaterThan(stats.ctimeMs);
+		expect(vinyl.stat.atimeMs).toBeGreaterThan(testStats.atimeMs);
+		expect(vinyl.stat.mtimeMs).toBeGreaterThan(testStats.mtimeMs);
+		expect(vinyl.stat.ctimeMs).toBeGreaterThan(testStats.ctimeMs);
 	});
 
 	describe('gulp', () => {
@@ -225,7 +223,7 @@ describe.each([
 			return new Promise((resolve, reject) => {
 				gulp.src(filePath)
 					.pipe(sourcemaps.init())
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(sourcemaps.write())
 					.pipe(tap(file => {
 						try {
@@ -250,7 +248,7 @@ describe.each([
 		test('Works with internal inlined sourcemap support', async () => {
 			await new Promise(resolve => {
 				gulp.src(filePath, { sourcemaps: true })
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(gulp.dest(outputPath, {
 						sourcemaps: true,
 					}))
@@ -274,7 +272,7 @@ describe.each([
 		test('Works with internal external sourcemap support', async () => {
 			await new Promise(resolve => {
 				gulp.src(filePath, { sourcemaps: true })
-					.pipe(compiler(sass))
+					.pipe(plugin(sass))
 					.pipe(gulp.dest(outputPath, {
 						sourcemaps: '.',
 					}))
@@ -304,16 +302,15 @@ describe(`Async compilation`, () => {
 
 describe(`Sync compilation`, () => {
 	test('Cannot use async importers with sync compilation', () => {
-		expect(() => {
+		return expect(() => {
 			const testDirectory = path.join(TEST_DIR, 'importers');
-
 			return compileTestDirectory(sync, testDirectory, OPTS_ASYNC_IMPORTS);
 		}).rejects.toThrow(/canonicalize.*synchronous compile functions/iu);
 	});
 });
 
 describe('normalise()', () => {
-	test('Trims', () => {
+	test('Normalises whitespace', () => {
 		const a = ' test\r\nline\r\n ';
 
 		expect(normalise(a)).toBe('test\nline');

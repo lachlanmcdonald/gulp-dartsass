@@ -1,8 +1,10 @@
-const path = require('path');
-const sass = require('sass');
-const fs = require('fs');
-const { pathToFileURL } = require('url');
-const chalk = require('chalk');
+import chalk from 'chalk';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import * as sass from 'sass';
+
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 const TEST_DIRECTORIES = [
 	'empty',
@@ -13,12 +15,12 @@ const TEST_DIRECTORIES = [
 ];
 
 TEST_DIRECTORIES.forEach(testDirectory => {
-	const stat = fs.statSync(path.join(__dirname, testDirectory));
+	const stat = fs.statSync(path.join(CURRENT_DIR, testDirectory));
 
 	if (stat.isDirectory()) {
-		const inputSassPath = path.join(__dirname, testDirectory, 'input.sass');
-		const inputScssPath = path.join(__dirname, testDirectory, 'input.scss');
-		const expectedFilePath = path.join(__dirname, testDirectory, 'expected.css');
+		const inputSassPath = path.join(CURRENT_DIR, testDirectory, 'input.sass');
+		const inputScssPath = path.join(CURRENT_DIR, testDirectory, 'input.scss');
+		const expectedFilePath = path.join(CURRENT_DIR, testDirectory, 'expected.css');
 
 		let contents = null;
 		let syntax = null;
