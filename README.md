@@ -2,6 +2,9 @@
 
 [![Build](https://github.com/lachlanmcdonald/gulp-dartsass/actions/workflows/build.yml/badge.svg?branch=main)][build-link] [![npm version](https://badge.fury.io/js/%40lmcd%2Fgulp-dartsass.svg)][package-link] [![License](https://img.shields.io/badge/License-MIT-blue.svg)][license-link] 
 
+> [!IMPORTANT]
+> This package was originally created to address the lack of maintenance of **gulp-sass**. However, gulp-sass v6.0.0 onwards works correctly with current sass versions. As such, this package is now deprecated.
+
 **gulp-dartsass** is a [Sass]-wrapper for [Gulp] with support for the modern API's custom file importers and functions.
 
 ## Installation
